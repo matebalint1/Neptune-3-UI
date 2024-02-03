@@ -43,12 +43,71 @@ NeptuneWindow {
     width: Sizes.dp(480)
     height: Sizes.dp(240)
 
-    Component.onCompleted: {
-        setWindowProperty("windowType", "hud");
-    }
+    property SurroundStore store: SurroundStore{}
 
-    MainView {
-        anchors.fill: parent
-        rootStore: RootStore {}
-    }
+    Button {
+            id: button1
+            text: "Surround View"
+            font.pixelSize: 16
+
+            property bool isSelected: true
+            // property alias surroundView: SurroundStore.surroundView
+
+            // signal surroundViewSelected(bool isSurround)
+
+            anchors.centerIn: parent
+            anchors.verticalCenterOffset: Sizes.dp(-60)
+            anchors.rightMargin: Sizes.dp(20)
+            width: Sizes.dp(150)
+            height: Sizes.dp(50)
+            onClicked: {
+                console.log(`Button 1 clicked`)
+                // root.store.setSurroundView(true)
+                isSelected = true
+                button2.isSelected = false
+            }
+
+            onIsSelectedChanged: {
+                root.store.setSurroundView(isSelected)
+            }
+
+            background: Rectangle {
+                color: button1.isSelected ? "green" : "black"
+            }
+        }
+
+    Button {
+            id: button2
+            text: "Radar"
+            font.pixelSize: 16
+
+            property bool isSelected: false
+            // property alias surroundView: SurroundStore.surroundView
+
+            anchors.centerIn: parent
+            anchors.verticalCenterOffset: Sizes.dp(+60)
+            anchors.rightMargin: Sizes.dp(20)
+            width: Sizes.dp(150)
+            height: Sizes.dp(50)
+            // radius: width / 2
+            onClicked: {
+                console.log(`Button 2 clicked`)
+                // root.store.setSurroundView(false)
+                isSelected = true
+                button1.isSelected = false
+            }
+
+            background: Rectangle {
+                color: button2.isSelected ? "green" : "black"
+            }
+        }
 }
+
+// Component.onCompleted: {
+//     setWindowProperty("windowType", "hud");
+// }
+
+// MainView {
+//     anchors.fill: parent
+//     rootStore: RootStore {}
+// }

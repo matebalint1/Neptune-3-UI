@@ -2,6 +2,8 @@
 module RemoteSettings 1.0
 
 interface UISettings {
+    bool surroundView;
+
     string language;
     list<string> languages;
 

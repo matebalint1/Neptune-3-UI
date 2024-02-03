@@ -39,10 +39,10 @@ ui:
 
 systemProperties:
     public:
-      showCluster: yes
+      showCluster: no
       showHUD: yes
-      devMode: yes
-      enableCursorManagement: no
+      devMode: no
+      enableCursorManagement: yes
       hardwareVariant: 'high'
       #Qt Safe Renderer settings
       qsrEnabled: no
@@ -69,7 +69,7 @@ logging:
   rules:
     - "*=false"
     - "qt.*=false"
-    - "qt.gamepad*=true"
+    - "qt.gamepad*=false"
     - "am.*=false"
     - "qml*=true"
     - "cursor.navigation=false"
