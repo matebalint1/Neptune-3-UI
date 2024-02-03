@@ -1,0 +1,301 @@
+/****************************************************************************
+**
+** Copyright (C) 2019 Luxoft Sweden AB
+** Contact: https://www.qt.io/licensing/
+**
+** This file is part of the Neptune 3 UI.
+**
+** $QT_BEGIN_LICENSE:FDL-QTAS$
+** Commercial License Usage
+** Licensees holding valid commercial Qt Automotive Suite licenses may use
+** this file in accordance with the commercial license agreement provided
+** with the Software or, alternatively, in accordance with the terms
+** contained in a written agreement between you and The Qt Company.  For
+** licensing terms and conditions see https://www.qt.io/terms-conditions.
+** For further information use the contact form at https://www.qt.io/contact-us.
+**
+** GNU Free Documentation License Usage
+** Alternatively, this file may be used under the terms of the GNU Free
+** Documentation License version 1.3 as published by the Free Software
+** Foundation and appearing in the file included in the packaging of
+** this file. Please review the following information to ensure
+** the GNU Free Documentation License version 1.3 requirements
+** will be met: https://www.gnu.org/licenses/fdl-1.3.html.
+** $QT_END_LICENSE$
+**
+****************************************************************************/
+
+/*!
+   \page neptune3ui-testing-squish.html
+   \title Neptune 3 UI - Squish Automated UI Testing
+   \brief How to use Squish within Neptune 3 UI.
+
+    \l{Squish} is a commercial product from \l{Froglogic} which is used for automated GUI testing.
+
+    The goals of these tests and their setup are so that we can:
+
+    \list
+     \li Provide a basic set of scripts for \l{Neptune 3 UI}, \l{QmlLive}, and
+         \l{Qt Application Manager} for smoke testing on a CI.
+     \li Document any specifics in Qt Automotive Suite, especially the multi-processing aspect,
+         which users should pay attention to for automated UI testing with Squish.
+     \li Provide reference scripts as a part of Neptune 3 UI.
+     \li Enable developers working with UI, in the Qt Automotive Suite, to write their own
+         tests, if needed.
+    \endlist
+
+    To use these tests, you need:
+    \list
+     \li \l{Qt Automotive Suite}
+     \li Squish installed on the test machine
+    \endlist
+
+    \note Squish and the accompanying license must be obtained from \l{Froglogic}.
+
+
+    \section1 Set Up Your Test Environment
+
+    Squish can be run:
+
+    \list 1
+        \li within an IDE - the Squish IDE is available for most developer platforms.
+        \li as a service - the service program, \c squishserver, is either distributed
+            with the IDE or can be adapted from an embedded source package. This source package
+            runs on different platforms and is downloadable from \l{Froglogic}.
+    \endlist
+
+    The \e{target} referenced embedded system is a \l{Yocto} Linux x64 build which, on the
+    Qt Automotive Suite, can be installed as \b{Intel NUC}.
+
+    Tests are provided in Neptune 3 UI's \c squishtest sub folder, and can be imported as a suite
+    directly into the Squish IDE.
+
+
+    \section2 Application(s) Under Test (AUTs)
+
+    Whether you use the Squish IDE or \e squishserver, you must define all of the AUTs, that also
+    includes all sub-processes that are called from within Neptune 3 UI apps. For multi-process,
+    each of the \l{Neptune 3 UI - App Development}{Neptune 3 UI apps} run as
+    \c{appman-launcher-qml} processes.
+
+    To distinguish and attach to these processes you need to use the \b{Squish hook plugin} that
+    extends Squish's attachable AUT feature. The \c server.ini file must be adapted to specify
+    where Neptune 3 UI and the other AUTs are located.
+
+    Because in multi-process, all Neptune 3 UI apps must be connected via Squish's attachable AUT
+    feature, these apps must be defined as attachable AUTs with a corresponding port number.
+    Additionally, the port in the \c server.ini has to match the port defined in its \c{info.yaml}
+    manifest file as \c{squishPort} property.
+
+    \note The Neptune 3 UI apps and their manifest files are located in \c {neptune3/apps}).
+
+    To run these tests directly from the IDE, it is possible and recommended to add or modify AUTs
+    and attachable AUTs with port numbers, in the IDE itself.
+
+    For more details, see \l{https://doc.froglogic.com/squish/latest/rg-ini-files.html}{Squish
+    Initialization Files}.
+
+    \badcode
+[General]
+AUT/appman = "/home/user/qt/bin"
+AUT/appman-launcher-qml = "/home/user/qt/bin"
+AUT/neptune3-ui = "/home/user/install/neptune3"
+attachableAUT/neptune3-ui = "localhost:3334"
+attachableAUT/appman = "localhost:7777"
+attachableAUT/app_appstore = "localhost:7720"
+attachableAUT/app_calendar = "localhost:7721"
+attachableAUT/app_climate = "localhost:7722"
+attachableAUT/app_cluster = "localhost:7723"
+attachableAUT/app_downloads = "localhost:7724"
+attachableAUT/app_hud = "localhost:7725"
+attachableAUT/app_map = "localhost:7726"
+attachableAUT/app_music = "localhost:7727"
+attachableAUT/app_phone = "localhost:7728"
+attachableAUT/app_settings = "localhost:7729"
+attachableAUT/app_sheets = "localhost:7730"
+attachableAUT/app_tuner = "localhost:7731"
+attachableAUT/app_vehicle = "localhost:7732"
+    \endcode
+
+    \section2 Exclude Disruptive Sub-Processes
+
+    Typically, Squish tries to connect to all sub-processes that are created from an initial AUT.
+    However, this behavior can lead to issues where Squish stops, does not create these processes,
+    or causes these processes to not behave as expected.
+
+    Remember, that these processes can also be external programs or services, which in our case
+    are:
+    \list
+     \li D-Bus process
+     \li remotesettings-server
+    \endlist
+
+    Consequently, for Neptune 3 UI you need to force Squish to ignore these processes to run the
+    tests. Otherwise these tests might not succeed from the beginning - for example because of a
+    stopped D-Bus session.
+
+    To \l{https://doc.froglogic.com/squish/latest/rg-ini-files.html#ignoredauts.txt}{ignore these processes}
+    you need to add or edit the \c ignoredauts.txt file in your Squish installation directory.
+    For macOS and other Unix-like Operating Systems, the file is in \c{SQUISHDIR/etc/}.
+
+    For Linux, make the following change:
+
+    \badcode
+    # ignore the following processes
+    remotesettings-server
+    dbus-daemon
+    \endcode
+
+    For other Operating Systems, you might need to modify the D-Bus process name.
+
+    \note It might be a good idea to ignore all sub-processes created that are not relevant
+    to test in the test suite.
+
+
+    \section2 Additional Libraries
+
+    Squish needs additional Qt libraries to run Neptune 3 UI tests. One solution is to copy the
+    following libraries from your installation folder to Squish's installation library
+    folder \c{SQUISHDIR/etc/lib}:
+
+    \list
+     \li \c libQt5Widgets.so
+     \li \c libQt5QuickWidgets.so
+    \endlist
+
+    \note Different Qt versions: If the Qt version for your Squish release differs from the
+    Qt version used in Neptune 3 UI, when the tests start, you may notice a warning in the
+    logs from \c squishserver indicating: \br"\c{Loaded Qt version X.xx differs from Squish/Qt
+    expected version X.yy, automating this AUT may not work.}"\br Currently, with Neptune 3 UI's
+    5.12 and Squish's 5.11 there haven't been issues and tests can run using the additional
+    libraries; but this warning mustn't be ignored.
+
+
+    \section1 Run Squish from the Command Line or on a Target
+
+    Once you have set up your test environment, you have the option to run tests via the
+    Squish IDE, the command line, or as a service: such as a \c systemd service (recommended),
+    for your target \l{Yocto} environment.
+
+    Remember to use a D-Bus session beforehand, as this is how Neptune 3 UI communicates
+    with its sub-processes.
+
+    Normally, for simple cases you can use a server, \c squishserver, to run the tests and a
+    corresponding client, \c squishrunner, that can request the server to run these tests
+    and return their results.
+
+    The AUT is on the server side, the test cases are transmitted from \c squishrunner to
+    \c squishserver; they need not be stored on the test machine. If you use the Squish IDE, when
+    performing tests, both \c squishserver and \c squishrunner are run seamlessly on the same
+    machine.
+
+    When you use the the command line, start the server first before the clients.
+
+    Ensure that all IP addresses for \c squishrunner are able to connect to \c squishserver. On
+    \c squishserver, this is stored in \c $SQUISH_DIR/etc/squishserverrc. Make sure that the
+    IP ranges match, \e{localhost} is always valid.
+
+    The server starts with the following:
+    \badcode
+$SQUISH_DIR/bin/squishserver --port 3333
+    \endcode
+
+    \note \c squishserver has a default port: 4322
+
+    Change the directory to the \c squishtest path in your Neptune 3 UI installation, and run a
+    single test case with the following command:
+
+    \badcode
+$SQUISH_DIR/bin/squishrunner --host SQUISH_SERVER_IP --port 3333 --testsuite suite_neptune3 --testcase tst_popup_climate
+    \endcode
+
+    The test cases are run on a client, and the results are returned.
+
+
+    \section1 Squish on Target Environment (Yocto)
+
+    You can add a test environment on target hardware with Neptune 3 UI installed. As mentioned
+    before, for a Yocto environment, you need to create a custom \c squishserver using the Yocto
+    SDK. A squish-embedded source package can be downloaded from the \l{Froglogic} website.
+    Additionally, you need to have a binary desktop Squish installation to use the \c squishidl
+    command.
+
+    \section2 Create a Custom (Yocto) Squishserver
+
+    The Yocto environment is an x64 Linux but unlike a standard Ubuntu x64 version,
+    libraries in Yocto are stored in \c /lib64 versus \c /lib .
+
+    Download and install the Yocto SDK separately, or use it from your Qt Automotive Suite
+    installation (Qt Automotive Suite, Intel NUC).
+
+    Next, download the squish-embedded source package \c squish-x.x.x-qt-embedded-src.tar.gz from
+    the \l{Froglogic} website.
+
+    To enable cross compiling, run the following command:
+    \badcode
+source <SDK-install-location>/environment-setup-corei7-64-poky-linux
+    \endcode
+
+    Then, change the directory to where the squish-embedded source package is located. Typically,
+    the binary desktop edition is installed in \c SQUISH_DIR:
+
+    \badcode
+mkdir -p yocto/build && cd yocto/build
+    \endcode
+
+    Run the next two commands consecutively:
+
+    \badcode
+../../configure --with-qmake=<SDK-install-location>/sysroots/x86_64-pokysdk-linux/usr/bin/qmake --enable-qmake-config --with-squishidl=$SQUISH_DIR/bin/squishidl --disable-all --enable-qt --enable-server
+    \endcode
+
+    \badcode
+./build
+    \endcode
+
+    Next, create a destination directory:
+
+    \badcode
+mkdir ../install
+    \endcode
+
+    Build and install Yocto into it. Then, create an archive for transferability and storability.
+    Make sure to use the same version as Squish.
+
+    \badcode
+./build install DESTDIR=../install && tar cfz ../squish-x.x.x-qt-yocto.tgz ../install
+    \endcode
+
+
+    \section2 Install and Set Up Custom Yocto Squishserver on Target Hardware
+
+    The affected directory structure on the Neptune 3 target is:
+    \badcode
+./home/root
+./home/.squish
+./opt
+./opt/squish
+    \endcode
+
+    Perform the following steps on the target:
+
+    \list
+      \li Unpack the \c squish.x.x.x-qt.yocto.tgz into \c /opt/squish-for-qt-x.x.x and rename the
+          directory according to the version number, if needed.
+      \li For convenience, create a symlink from the directory you just created to \c{/opt/squish}.
+          Consider this symlink as your \c{$SQUISH_DIR}.
+      \li Edit \c $SQUISH_DIR/etc/squishserverrc according to your network arrangement.
+      \li Edit \c $SQUISH_DIR/etc/ignoredauts.txt to exclude disruptive sub-processes.
+      \li Place your license key in the \c{/home/root} directory.
+      \li Transfer the \c $USER\.squish configuration files from your working Squish installation
+          directory on your local machine. This directory is created when you first start the
+          Squish IDE.
+      \li Then, adapt the paths to the Neptune 3 UI installation: \c /opt/.
+          The files involved are: \c server.ini and \c paths.ini in the \c .squish/ver1/
+          sub-folder. For more information, see
+          \l{https://doc.froglogic.com/squish/latest/rg-ini-files.html}{Squish initialization files}.
+    \endlist
+    \note Tests cannot be performed while Neptune 3 UI is running. You need to make
+    sure that the \c neptune3-ui process is terminated, prior to running the tests.
+
+*/

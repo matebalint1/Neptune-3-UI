@@ -1,0 +1,119 @@
+/****************************************************************************
+**
+** Copyright (C) 2019 Luxoft Sweden AB
+** Copyright (C) 2018 Pelagicore AG
+** Contact: https://www.qt.io/licensing/
+**
+** This file is part of the Neptune 3 UI.
+**
+** $QT_BEGIN_LICENSE:FDL-QTAS$
+** Commercial License Usage
+** Licensees holding valid commercial Qt Automotive Suite licenses may use
+** this file in accordance with the commercial license agreement provided
+** with the Software or, alternatively, in accordance with the terms
+** contained in a written agreement between you and The Qt Company.  For
+** licensing terms and conditions see https://www.qt.io/terms-conditions.
+** For further information use the contact form at https://www.qt.io/contact-us.
+**
+** GNU Free Documentation License Usage
+** Alternatively, this file may be used under the terms of the GNU Free
+** Documentation License version 1.3 as published by the Free Software
+** Foundation and appearing in the file included in the packaging of
+** this file. Please review the following information to ensure
+** the GNU Free Documentation License version 1.3 requirements
+** will be met: https://www.gnu.org/licenses/fdl-1.3.html.
+** $QT_END_LICENSE$
+**
+****************************************************************************/
+
+/*!
+   \page neptune3ui-system-dialog.html
+   \title Neptune 3 UI - System Dialog
+
+   Neptune 3 UI has a system dialog where the user can see and monitor the performance
+   of the system while running Neptune 3 UI. In order to pop the dialog up, user can
+   tap on the Qt logo that is located at the bottom right corner of the UI.
+
+   \section1 System Monitor
+
+   The first tab of the system dialog contains the following information:
+
+   \list
+   \li Startup Timings: provides the time spent from booting until the process starting
+       point of the System UI and from the starting point of the System UI until the first
+       frame to be drawn
+   \li CPU consumptions and memory consumptions (CPU, GPU and Memory consumption values
+   should be taken as absolute values, because visualization of these values takes performance
+   resources as well)
+   \li Network (Internet Connection) Status
+   \li Connected Network Devices with all their address information
+   \li Version: shows which Neptune 3 UI, Application Manager and Qt IVI versions are being
+       used
+   \li Platform: shows which operating system, Qt version, and OpenGL are being used.
+   \endlist
+
+   On top of the list, there is also a switch button that is used to show the system monitor
+   overlay on top of the UI to show the performance monitor numbers while operating the UI.
+
+   \image system-dialog-system.png
+
+   \image system-dialog-system2.png
+
+   \section1 List of Apps
+
+   The second tab of the system dialog shows a list of all apps installed in Neptune 3 UI
+   and their states. When an app is running, the corresponding section contains the following
+   information:
+
+   \list
+   \li Whether \c Autostart and \c Autorecover options are enabled
+   \li Current CPU and Memory consumptions
+   \li Window(s), in which the app is shown
+   \li Time spent until the app's first frame is drawn
+   \endlist
+
+   Each app item also has a switch button to enable the performance information overlay on top of
+   the app window. For an app that has two windows, \l{ApplicationCCWindow} and
+   \l{ApplicationICWindow}, two switch buttons can be seen and selected depending on the need.
+
+   Tap the X icon on the right of the app, to terminate the app. Once the app is terminated, only
+   the app's name and the start button remain in the app's section. Tap the ▷ button to start the
+   application again.
+
+   \note Only removing the app widget from the home screen, does not terminate the app, it may
+   still be running in the background.
+
+   The \c Autostart switch button enables apps to run automatically on Neptune 3 UI, upon startup.
+
+   The \c Autorecover switch button enables apps to recover after crashing or being forced to close;
+   they are restarted automatically. After three unsuccessful recovery attempts \c Autostart option
+   is switched off.
+
+   \warning It's possible to disable \c Autostart option for all the apps, including system apps,
+    like Instrument Cluster, HUD, and Climate. If \c Autostart is disabled, these apps won't
+    start when Neptune 3 UI restarts. For the Instrument Cluster and HUD, this leads to empty
+    windows on system start-up; the Climate app won't be shown in the Center Console. For apps with
+    widgets, if the app is stopped or the widget is closed, and \c Autostart is disabled, then the
+    app doesn't start and the widget isn't shown on the Home screen upon system restart.
+
+   You can remove the app if it is not built-in (installed with
+   \l{Qt Creator Plugin for Qt Application Manager}, \l{Controller}{appman-controller} or from
+   \l{Neptune 3 UI Apps}{Downloads app}). To remove the installed app, tap on the recyle bin icon
+    near the app id.
+
+   \image system-dialog-apps.png
+
+   \section1 Performance Tab
+
+   The third tab of the system dialog contains two switch buttons to enable the performance
+   overlay of the \l{center console display} and the \l{instrument cluster}. It forces the System UI
+   to constantly re-draw itself to get the current GPU/CPU consumptions.
+
+   \image system-dialog-performance.png
+
+   \section1 Diagnostics Tab
+
+   The last tab of the system dialog shows the output of the qtdiag diagnostic tool.
+
+   \image system-dialog-diagnostics.png
+*/

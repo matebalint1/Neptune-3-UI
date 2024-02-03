@@ -1,0 +1,18 @@
+formatVersion: 1
+formatType: am-package
+---
+id:      'com.pelagicore.downloads'
+icon:    'icon.png'
+name:
+  en: 'Downloads'
+  de: 'Downloads'
+  cs: 'Downloads'
+
+applications:
+  - id:    'com.pelagicore.downloads'
+    code:    'Main.qml'
+    runtime: 'qml-inprocess'
+    applicationProperties: { private: { squishPort: 7724 } }
+categories: [ 'downloads' ]
+intents:
+- id: activate-app

@@ -1,0 +1,25 @@
+formatVersion: 1
+formatType: am-package
+---
+id:      'com.pelagicore.map'
+icon:    'icon.png'
+name:
+  en: 'Maps'
+  de: 'Karten'
+  cs: 'Mapy'
+  ru: 'Карты'
+  zh: '地图'
+  ja: '地図'
+  ko: '지도'
+
+applications:
+- id:      'com.pelagicore.map'
+  code:    'Main.qml'
+  runtime: 'qml'
+  applicationProperties: { private: { squishPort: 7726 } }
+
+categories: [ 'navigation', 'widget' ]
+intents:
+- id: show-destination
+- id: activate-app
+

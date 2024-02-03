@@ -1,0 +1,23 @@
+formatVersion: 1
+formatType: am-package
+---
+id:      'com.pelagicore.calendar'
+icon:    'icon.png'
+name:
+  en: 'Calendar'
+  de: 'Kalender'
+  cs: 'Kalendář'
+  ru: 'Календарь'
+  zh: '日历'
+  ja: 'カレンダー'
+  ko: '달력'
+
+applications:
+  - id: 'com.pelagicore.calendar'
+    code:    'Main.qml'
+    runtime: 'qml'
+    applicationProperties: { private: { squishPort: 7721 } }
+
+categories: [ 'productivity', 'widget' ]
+intents:
+- id: activate-app

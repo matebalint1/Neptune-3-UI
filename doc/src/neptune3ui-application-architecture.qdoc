@@ -1,0 +1,226 @@
+/****************************************************************************
+**
+** Copyright (C) 2019 Luxoft Sweden AB
+** Copyright (C) 2018 Pelagicore AG
+** Contact: https://www.qt.io/licensing/
+**
+** This file is part of the Neptune 3 UI.
+**
+** $QT_BEGIN_LICENSE:FDL-QTAS$
+** Commercial License Usage
+** Licensees holding valid commercial Qt Automotive Suite licenses may use
+** this file in accordance with the commercial license agreement provided
+** with the Software or, alternatively, in accordance with the terms
+** contained in a written agreement between you and The Qt Company.  For
+** licensing terms and conditions see https://www.qt.io/terms-conditions.
+** For further information use the contact form at https://www.qt.io/contact-us.
+**
+** GNU Free Documentation License Usage
+** Alternatively, this file may be used under the terms of the GNU Free
+** Documentation License version 1.3 as published by the Free Software
+** Foundation and appearing in the file included in the packaging of
+** this file. Please review the following information to ensure
+** the GNU Free Documentation License version 1.3 requirements
+** will be met: https://www.gnu.org/licenses/fdl-1.3.html.
+** $QT_END_LICENSE$
+**
+****************************************************************************/
+
+/*!
+   \page neptune3ui-application-architecture.html
+   \title Neptune 3 UI - App Architecture
+   \brief The architecture and common principles for Neptune 3 apps
+
+   Neptune 3 UI uses a common architecture and principles for all of its apps: the Core UI
+   Architecture.
+
+   \section1 Core UI Architecture
+
+   The Core UI Architecture adapts the component-based architecture, by breaking the UI down into
+   individual UI components, to ensure component reusability. A component encapsulates both the
+   functionality and behavior of a software element into a reusable unit.
+
+   Component-based software design has many advantages over the traditional object-oriented
+   software design, such as:
+
+   \list
+   \li Reduced time-to-market and development costs by reusing existing components.
+   \li Increased reliability by reusing existing components.
+   \endlist
+
+   In general, Neptune 3 differentiates between UI primitives, like rectangles and images, and
+   controls, like buttons. To combine several UI primitives and controls, you use \c panels or
+   \c views, which are specific container types used to layout other containers as child UI
+   types or controls. UI primitives are only used inside controls, because the controls can style
+   the UI. The difference between a \c panel and a \c view is that the view interfaces with the
+   stores, the app's business layer.
+
+   \section2 Apps
+
+   An app is usually designed around a specific context, often using a particular area of the
+   service API, and can also depend on common services to be aware of the overall system's state.
+   The aim of the Core UI Architecture is to avoid situations where the UI has dependencies on
+   these common services; instead, they should be wrapped as a \c store entity.
+
+   The \c store is the only entity that is allowed to talk to service instances. Besides being the
+   adapter to the service interfaces, the \c store provides the necessary business logic to achieve
+   a clean UI. Consequently, the UI should only contain visual logic and exclude any business
+   logic.
+
+   In turn, the UI itself is divided into several UI elements, some of which are allowed to have a
+   reference to the \c store; but not others. Managing these dependencies in such a strict way allows
+   these components to stay testable in a later stage of the project. This type of architecture also
+   allows the developer to isolate a part of the UI and work solely in that part, independently,
+   without being tied to service dependencies.
+
+   Example architecture:
+
+   \badcode
+
+   apps/music/
+       stores/
+           MusicStore.qml
+       views/
+           TopView.qml
+           BottomView.qml
+       panels/
+           AlbumArtPanel.qml
+           MusicBrowseList.qml
+       controls/
+           MusicControls.qml
+           MusicProgressBar.qml
+       Main.qml
+
+   \endcode
+
+   \image application-architecture.png
+
+   Based on the diagram above:
+
+   \list
+   \li Stores: Encapsulate the access to the service API and contain required business logic
+   \li Views: Have a reference to a store which provides the necessary information to others
+   \li Panels: Container for other controls and panels. A panel should not have any dependency
+               to a store or a view
+   \li Controls: Re-usable visual element which has no external data dependencies, besides
+       primitives
+   \li Helpers: Collection of some operations.
+   \endlist
+
+   \section3 Stores
+
+   A \c store is a data-driven object, that encapsulates the business logic in an app; it is the
+   only portion of the UI that uses the service layer. A \c store can have child stores which
+   can be further forwarded to sub-trees in the UI. Ideally, a \c store has an interface that
+   defines the API for the store to be tested. \c Views would only see this interface so that
+   they do not depend on a concrete \c store. The \c store that inherits the abstract interface
+   then fills it with values from the required service and feeds the UI. Alternatively, developers
+   can also use the store interface and feed the UI via static simulation data or an automated
+   simulation backend that runs the states required to provide the desired data.
+
+   \section3 Views
+
+   A \c view is a container for UI panels; this is the only container that depends on a store
+   inside the app. Other UI parts need to be clear that they do not have any dependencies to any
+   stores like \c views do, to make sure these components are easy to test.
+
+   \image music-widget-view.jpg
+
+   The image above is an example of a simple widget \c view in a Music App. It is a container that
+   holds the music control panel and an album art panel. This \c view takes the information from
+   the music store that is interfaced with the music service, which provides a collection of songs
+   to the app.
+
+   \section3 Panels
+
+   A \c panel is a container for controls and other panels. Normally, a \c panel is a layout of
+   controls with a set of functionalities to support the app, such as the Music Control Panel
+   shown below:
+
+   \image music-control-panel.jpg
+
+   \section3 Controls
+
+   A \c control in this context is an app-specific control that is used only by the app itself.
+   For example, the play, previous, and next button in the image above.
+
+   \section3 Helpers
+
+   A helper is an object that contains computing functions, but no properties. A typical helper
+   is a set of JavaScript functions, which (if required) could later be moved into C++ code
+   depending on the app's requirements.
+
+   \section2 UI Harnesses
+
+   The architecture described above gives the developer the capability to work independently
+   without depending on some services. Neptune 3 UI's harnesses are located in the tests folder
+   where they are also used by the unit tests.
+
+   In many large-scale UI projects, it is very common that UI developers have to run the whole UI
+   just to see changes on a small UI component. In comparison, the UI Harness enables developers
+   to do UI live reloading, such as via QmlLive, during the development process, which can
+   significantly boost their productivity.
+
+   Below is an example of the UI harness for the instrument cluster that uses some static data
+   to simulate a particular state and can be run independently using qmlscene or qmllive without
+   the need to run the whole UI.
+
+   \badcode
+
+   // tests/ClusterHarness.qml
+
+   import QtQuick 2.8
+   import QtQuick.Window 2.2
+
+   import views 1.0
+   import stores 1.0
+
+   import shared.Style 1.0
+   import shared.Sizes 1.0
+
+   Item {
+       id: root
+       width: Sizes.dp(1920)
+       height: Sizes.dp(720)
+
+       Image {
+           anchors.fill: parent
+           source: Style.image("instrument-cluster-bg")
+           fillMode: Image.Stretch
+       }
+
+       // The Cluster View that shows large parts of the cluster
+       ClusterView {
+           anchors.fill: parent
+           rtlMode: root.LayoutMirroring.enabled
+
+           // A mocked cluster store to test the cluster view
+           // independently from any services it normally would
+           // depend on
+           store: ClusterStoreInterface {
+               id: dummystore
+               navigationMode: false
+               speed: 0.0
+               speedLimit: 120
+               speedCruise: 40.0
+               driveTrainState: 2
+               ePower: 50
+
+               lowBeamHeadlight: true
+               highBeamHeadlight: true
+               fogLight: true
+               stabilityControl: true
+               seatBeltFasten: true
+               leftTurn: true
+
+               rightTurn: true
+               absFailure: true
+               parkBrake: true
+               tyrePressureLow: true
+               brakeFailure: true
+               airbagFailure: true
+           }
+       }
+   }
+   \endcode
+*/

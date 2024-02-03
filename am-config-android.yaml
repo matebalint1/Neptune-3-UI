@@ -1,0 +1,8 @@
+formatVersion: 1
+formatType: am-configuration
+---
+# basic AM functionality for android. without installer features
+
+applications:
+  builtinAppsManifestDir: "${CONFIG_PWD}/apps"
+  installedAppsManifestDir: ~

@@ -1,0 +1,211 @@
+/****************************************************************************
+**
+** Copyright (C) 2019 Luxoft Sweden AB
+** Copyright (C) 2018 Pelagicore AG
+** Contact: https://www.qt.io/licensing/
+**
+** This file is part of the Neptune 3 UI.
+**
+** $QT_BEGIN_LICENSE:FDL-QTAS$
+** Commercial License Usage
+** Licensees holding valid commercial Qt Automotive Suite licenses may use
+** this file in accordance with the commercial license agreement provided
+** with the Software or, alternatively, in accordance with the terms
+** contained in a written agreement between you and The Qt Company.  For
+** licensing terms and conditions see https://www.qt.io/terms-conditions.
+** For further information use the contact form at https://www.qt.io/contact-us.
+**
+** GNU Free Documentation License Usage
+** Alternatively, this file may be used under the terms of the GNU Free
+** Documentation License version 1.3 as published by the Free Software
+** Foundation and appearing in the file included in the packaging of
+** this file. Please review the following information to ensure
+** the GNU Free Documentation License version 1.3 requirements
+** will be met: https://www.gnu.org/licenses/fdl-1.3.html.
+** $QT_END_LICENSE$
+**
+****************************************************************************/
+
+/*!
+   \page neptune3ui-requests.html
+   \title Neptune 3 UI - App Requests
+
+   An application request is a collective term used in Neptune 3 UI to describe
+   an exchange of commands between apps. Application requests currently use two
+   features in \l{Qt Application Manager}: OpenDocument interface and
+   \l{Intents in Neptune 3 UI apps}.
+
+   An application request is used to send a request to an application to just open
+   or open in a certain state. That said, the action should be possible to be
+   performed from wherever in the system.
+
+   \section1 Brief Demo
+
+   In the following examples, a request to 'open music app', and a request to
+   'open map app and navigate to some specific charging station' are demonstrated.
+
+   The following lines are added in the requested applications info.yaml files so
+   that the ApplicationManager can identify those.
+
+   Music app, info.yaml:
+
+   \badcode
+   mimeTypes: [ 'x-scheme-handler/x-radio' ]
+   \endcode
+
+   Map app, info.yaml:
+
+   \badcode
+   mimeTypes: [ 'x-scheme-handler/x-map' ]
+   \endcode
+
+   And finally, randomly in the system, from wherever the request should be sent:
+
+   \badcode
+   Button {
+       id: openRadioApp
+       onClicked: {
+           Qt.openUrlExternally("x-radio://");
+       }
+   }
+
+   Button {
+       id: takeMeHome
+       onClicked: {
+           Qt.openUrlExternally("x-map://takemehome");
+       }
+   }
+   \endcode
+
+   In addition, for the Map Application, the following lines should be added in the
+   application's store so that the url is processed as shown below, instructing
+   the application to set the selected address and prepare for starting the navigation
+   to it.
+
+   \badcode
+   Connections {
+       target: ApplicationInterface
+       //handle here all specific app behavior
+       function onOpenDocument: {
+           //process documentUrl "getmeto/Donald Weese Ct, Las Vegas"
+       }
+   }
+   \endcode
+
+   For the Music Application example, since it is only about opening the app, nothing
+   has to be added in its store.
+
+   \section1 Detailed Design
+
+   An application could call the Qt.openUrlExternally() function passing as parameter
+   the mime-type of the application that is intended to be opened, followed by the
+   desired url indicating what the application should do when opening.
+
+   For that to be successful, the respective mime-types should be added accordingly
+   to the application's info.yaml files (e.g., mimeTypes: [ 'x-scheme-handler/x-radio' ]).
+   The ApplicationManager will then consult its internal database of applications looking
+   for a match with x-scheme-handler/x-mimeType. If there is a successful match, the
+   openUrlRequested signal will be emitted and its receiver (\l{ApplicationRequestHandler}) can then
+   either acknowledge the request by calling acknowledgeOpenUrlRequest function or reject it
+   (rejectOpenUrlRequest). If then the application is started, the url is supplied to the
+   application as a document through the signal openDocument(string documentUrl, string
+   mimeType) via its ApplicationInterface.
+
+   \section2 Brief diagram of what happens when ApplicationX requests to open ApplicationY
+
+   \image application-requests.jpg
+
+   \section2 Brief diagram of what happens when a back key press is send
+
+   \image application-requests-goback.jpg
+
+   \section1 Intents in Neptune 3 UI apps
+
+   \l{Qt Application Manager} intents enable an app to communicate with another app or with
+   System UI by sending a command and then waiting for a return value (information) in response.
+
+   The table below describes the set of intents (see \l{Qt Application Manager}{Intents System UI and Applications Example}
+   documentation) provided by apps, as well as a generalized description of how an app reacts on an
+   intent. For example, in the first row, the apps listed in "App" column react on activate-app intent
+   by opening or rising an app window.
+
+
+   \table
+    \header
+     \li Name
+     \li Functionality
+     \li App
+
+    \row
+     \li activate-app
+     \li opens or rises app window
+     \li \list
+           \li com.luxoft.vehicle
+           \li com.pelagicore.apps.settings
+           \li com.pelagicore.calendar
+           \li com.pelagicore.downloads
+           \li com.pelagicore.map
+           \li com.pelagicore.music
+           \li com.pelagicore.phone
+           \li com.pelagicore.tuner
+           \li com.luxoft.alexa
+         \endlist
+
+     \row
+      \li set-next-accent-color
+      \li switches to the next theme color
+      \li \list
+           \li com.pelagicore.apps.settings
+          \endlist
+     \row
+      \li show-destination
+      \li opens map search for text query (parameter: \c destination: text address query)
+      \li \list
+           \li com.pelagicore.map
+          \endlist
+     \row
+      \li music-command
+      \li switches music tracks (parameter: \c musiccommand: prev/next)
+      \li \list
+           \li com.pelagicore.music
+          \endlist
+
+     \row
+      \li call-support
+      \li initiates call to neptune support service (for more information
+          see \l{Chapter 2: Extend the Parking App and Integrate
+          with Intent and Notification} {Develop a Parking App})
+      \li \list
+           \li com.pelagicore.phone
+          \endlist
+     \row
+      \li trigger-voiceassistant
+      \li enables Alexa app to listen to commands
+      \li \list
+           \li com.luxoft.alexa
+          \endlist
+     \row
+      \li vehicle-control
+      \li operates vehicle's doors, trunk and sun roof. This intent requires 3 parameters:
+          \list
+           \li action: open/close
+           \li side: left/right
+           \li part: trunk/sunroof/door
+          \endlist
+      \li \list
+           \li com.luxoft.vehicle
+          \endlist
+     \endtable
+
+   \section2 Current Use-Cases in Neptune 3 UI
+
+   \section3 Media apps
+   All media apps (Radio, Web Radio, Music) are connected to each other using
+   requests. To try it, navigate to either Music, Radio or WebRadio app and press
+   "sources" in the toolbar menu on the left. A popup with all available music
+   sources will open. Tapping on any of those sources will direct you to the respective media app.
+
+   \section3 Vehicle Settings
+   There is a list with 'charging station' suggestions in the energy panel. If any of those is
+   pressed, the maps app will open and load the address of a selected charging station.
+*/

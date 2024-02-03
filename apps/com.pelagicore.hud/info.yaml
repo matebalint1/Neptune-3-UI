@@ -1,0 +1,14 @@
+formatVersion: 1
+formatType: am-package
+---
+id:      'com.pelagicore.hud'
+icon:    'icon.png'
+name:
+  en: 'HUD'
+
+applications:
+  - id:      'com.pelagicore.hud'
+    code:    'Main.qml'
+    runtime: 'qml'
+    applicationProperties: { private: { squishPort: 7725 } }
+categories: [ 'hud' ]

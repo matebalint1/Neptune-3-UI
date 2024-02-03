@@ -1,0 +1,20 @@
+formatVersion: 1
+formatType: am-package
+---
+id:      'com.pelagicore.sheets'
+icon:    'icon.png'
+name:
+  en: 'Sheets'
+  de: 'Sheets'
+  cs: 'Sheets'
+  ru: 'Sheets'
+  zh: 'Sheets'
+  ja: 'Sheets'
+  ko: 'Sheets'
+
+applications:
+  - id:      'com.pelagicore.sheets'
+    code:    'Main.qml'
+    runtime: 'qml'
+
+categories: [ 'dev' ]
