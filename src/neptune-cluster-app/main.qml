@@ -31,6 +31,7 @@
 
 import QtQuick 2.12
 import QtQuick.Window 2.12
+import QtQuick.Controls 2.2
 
 import shared.Style 1.0
 import shared.Sizes 1.0
@@ -44,6 +45,9 @@ Window {
     height: 1080
     title: qsTr("Cluster")
     color: "black"
+    flags: Qt.FramelessWindowHint
+    visibility: "FullScreen"
+
 
     readonly property real mockedWindowsAcpectRatio: 1920 / 720
     Component.onCompleted: {

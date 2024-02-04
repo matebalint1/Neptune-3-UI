@@ -41,6 +41,9 @@ import shared.Style 1.0
 Window {
     id: root
 
+    flags: Qt.FramelessWindowHint
+    visibility: "FullScreen"
+
     property var hudAppInfo
     property var hudStore
 

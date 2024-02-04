@@ -41,6 +41,9 @@ import shared.Sizes 1.0
 Window {
     id: root
 
+    flags: Qt.FramelessWindowHint
+    visibility: "FullScreen"
+
     property alias popupParent: popupParent
     property alias mainCenterConsole: mainCenterConsole
     property RootStore store
