@@ -1,3 +1,13 @@
+# HoLL Demo
+* `git clone` 
+* `git checkout fzi-5.15-dev`
+* `qmake`
+* `make -j$(nproc)`
+* `./neptune3-ui -r` to run center console and 150% model selection
+* `./neptune-cluster-app` to run instrument cluster
+
+
+
 # Neptune 3 UI
 
 Neptune 3 UI provides a UI implementation for Qt in In-Vehicle Infotainment (IVI) systems.
