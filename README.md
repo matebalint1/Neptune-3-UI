@@ -5,6 +5,8 @@
 * `make -j$(nproc)`
 * `./neptune3-ui -r` to run center console and 150% model selection
 * `./neptune-cluster-app` to run instrument cluster
+* *Windows + arrow* to move active window within screen
+* *Windows + Shift + arrow* to move active window between screens
 
 
 
