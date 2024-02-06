@@ -50,7 +50,7 @@ NeptuneWindow {
             text: "Surround View"
             font.pixelSize: 16
 
-            property bool isSelected: true
+            property bool isSelected: false
             // property alias surroundView: SurroundStore.surroundView
 
             // signal surroundViewSelected(bool isSurround)
@@ -65,6 +65,7 @@ NeptuneWindow {
                 // root.store.setSurroundView(true)
                 isSelected = true
                 button2.isSelected = false
+                // root.store.setSurroundView(true)
             }
 
             onIsSelectedChanged: {
@@ -81,7 +82,7 @@ NeptuneWindow {
             text: "Radar"
             font.pixelSize: 16
 
-            property bool isSelected: false
+            property bool isSelected: true
             // property alias surroundView: SurroundStore.surroundView
 
             anchors.centerIn: parent
@@ -95,6 +96,7 @@ NeptuneWindow {
                 // root.store.setSurroundView(false)
                 isSelected = true
                 button1.isSelected = false
+                // root.store.setSurroundView(false)
             }
 
             background: Rectangle {

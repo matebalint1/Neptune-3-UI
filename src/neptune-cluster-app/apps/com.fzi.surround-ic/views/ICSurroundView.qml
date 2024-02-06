@@ -39,71 +39,45 @@ import shared.Sizes 1.0
 import "../stores" 1.0
 import "../panels" 1.0
 
-import QtMultimedia 5.15
-
 Item {
     id: root
 
     property SurroundStore store
 
-    // property string videoSource: root.store.surroundView ? "../assets/video.mp4" : ""
-
-    Video {
-        id: video
-        // enabled: root.store.surroundView
+    Image {
+        id: surroundViewImage
+        // enabled: !root.store.surroundView
         visible: root.store.surroundView
-        width: parent.width / 3
-        height: width
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.leftMargin: parent.width / 2.7
-        anchors.rightMargin: parent.width / 2.7
-        // anchors.topMargin: parent.width / 10
-        anchors.verticalCenter: parent.verticalCenter
+        width: parent.width * 0.3
+        anchors.horizontalCenter: parent.horizontalCenter
+        //anchors.verticalCenter: parent.verticalCenter
+        y: parent.height * 0.3
+        fillMode: Image.PreserveAspectFit
 
-        source: "../assets/video.mp4"
-        // source: videoSource
-        autoPlay: true
-        fillMode: VideoOutput.PreserveAspectCrop
+        source: "../assets/surround-view/parking-overhead-view.png"
 
-        onPlaying: console.log("video playing")
+        onVisibleChanged: {
+            if (visible) {
+                console.log("surround view active")
+            }
+        }
     }
 
     Image {
-           id: image
+           id: radarImage
            // enabled: !root.store.surroundView
            visible: !root.store.surroundView
-           width: parent.width / 3
-           height: width
-           anchors.left: parent.left
-           anchors.right: parent.right
-           anchors.leftMargin: parent.width / 2.7
-           anchors.rightMargin: parent.width / 2.7
-           anchors.verticalCenter: parent.verticalCenter
+           height: parent.height
+           anchors.horizontalCenter: parent.horizontalCenter
+           //anchors.verticalCenter: parent.verticalCenter
+           y: parent.height * 0.1
 
-           source: "../assets/radar.jpg"
+           source: "../assets/radar/car-with-radar.png"
+
+           onVisibleChanged: {
+                if (visible) {
+                    console.log("radar view active")
+                }
+           }
        }
-
-    // property MusicStore store
-
-    // Image {
-    //     anchors.fill: parent
-    //     source: Style.image("instrument-cluster-bg")
-    //     fillMode: Image.Stretch
-    // }
-
-    // ICAlbumArtPanel {
-    //     id: albumArt
-    //     width: Sizes.dp(540)
-    //     height: Sizes.dp(464)
-    //     anchors.centerIn: parent
-    //     anchors.verticalCenterOffset: Sizes.dp(50)
-    //     musicPlaying: root.store.playing
-    //     musicPosition: root.store.currentTrackPosition
-    //     currentSongTitle: root.store.currentEntry
-    //               ? root.store.currentEntry.title
-    //               : qsTr("Track unavailable")
-    //     currentArtisName: root.store.currentEntry ? root.store.currentEntry.artist : ""
-    //     currentProgressLabel: root.store.elapsedTime + " / " + root.store.totalTime
-    // }
 }
