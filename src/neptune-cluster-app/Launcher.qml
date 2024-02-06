@@ -36,9 +36,13 @@ import Qt.labs.folderlistmodel 2.2
 import shared.Sizes 1.0
 
 import "../sysui/launcher" 1.0
+import "./apps/com.fzi.surround-ic/stores" 1.0
+
 
 Item {
     id: root
+
+    property SurroundStore store: SurroundStore {}
 
     signal appClicked(var appUrl)
 
@@ -81,12 +85,26 @@ Item {
                 anchors.fill: parent
                 editModeBgOpacity: 0.0
 
-                icon.name: Qt.resolvedUrl("apps/" + fileName + '/' + 'icon.png')
+                //icon.name: Qt.resolvedUrl("apps/" + fileName + '/' + 'icon.png')
+                icon.name: (index == 0 && root.store.surroundView) ? Qt.resolvedUrl("apps/" + fileName + '/' + 'surround-view-icon.png') : Qt.resolvedUrl("apps/" + fileName + '/' + 'icon.png')
+                
                 gridOpen: false
 
                 onClicked: {
                     root.appClicked(Qt.resolvedUrl("apps/" + fileName + '/' + 'Main.qml'));
                 }
+
+                // Connections {
+                //     target: root.store
+                //     onSurroundViewChanged: {
+                //         if (index == 0) {
+                //                 var iconName = root.store.surroundView ? Qt.resolvedUrl("apps/" + fileName + '/' + 'surround-view-icon.png') : Qt.resolvedUrl("apps/" + fileName + '/' + 'icon.png')
+                //                 appButton.icon.name = iconName
+                //                 //console.log("icon url: " + Qt.resolvedUrl("apps/" + fileName + '/' + 'icon.png'))
+                //                 console.log("icon name: " + iconName)
+                //             }
+                //         }
+                // }
             }
         }
     }
