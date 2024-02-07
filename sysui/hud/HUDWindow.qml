@@ -41,8 +41,8 @@ import shared.Style 1.0
 Window {
     id: root
 
-    flags: Qt.FramelessWindowHint
-    visibility: "FullScreen"
+    flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
+    // visibility: "FullScreen"
 
     property var hudAppInfo
     property var hudStore
@@ -65,6 +65,10 @@ Window {
         // It happens because QQmlEngine::retranslate() refreshes all the engine's bindings
         width = Config.hudWidth
         height = Config.hudHeight
+
+        // Move window to the bottom left corner
+        x = 0
+        y = Screen.desktopAvailableHeight - height
     }
 
     Item {
