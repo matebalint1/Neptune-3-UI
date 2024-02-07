@@ -59,8 +59,8 @@ Item {
     property string workRouteTime: ""
 
     // TODO make the locations configurable and dynamic
-    readonly property var homeAddressData: QtPositioning.coordinate(57.706436, 12.018661)
-    readonly property var workAddressData: QtPositioning.coordinate(57.709545, 11.967005)
+    readonly property var homeAddressData: QtPositioning.coordinate(52.510838436368964, 13.390127413285706)
+    readonly property var workAddressData: QtPositioning.coordinate(49.01209536120699, 8.424627971015827)
 
     readonly property int destinationButtonrowHeight: Sizes.dp(150)
 
