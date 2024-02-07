@@ -29,6 +29,9 @@
 **
 ****************************************************************************/
 
+
+//responsible for the random simulation we see
+
 import QtQuick 2.0
 import shared.com.pelagicore.drivedata.simulation 1.0
 
@@ -127,23 +130,23 @@ Item {
           Telltales simulation
             - left/right turn, lights are controlled manually
         */
-        property Timer telltalesTimer: Timer {
-            interval: 3000
-            onTriggered: {
-                backend.stabilityControl = getNewTelltaleState();
-                backend.seatBeltNotFastened = getNewTelltaleState();
-                backend.ABSFailure = getNewTelltaleState();
-                backend.parkBrake = getNewTelltaleState();
-                backend.tyrePressureLow = getNewTelltaleState();
-                backend.brakeFailure = getNewTelltaleState();
-                backend.airbagFailure = getNewTelltaleState();
-            }
-            repeat: true
-            running: backend.enableSimulation
-            function getNewTelltaleState() {
-                return Math.round(Math.random());
-            }
-        }
+        // property Timer telltalesTimer: Timer {
+        //     interval: 3000
+        //     onTriggered: {
+        //         backend.stabilityControl = getNewTelltaleState();
+        //         backend.seatBeltNotFastened = false;
+        //         backend.ABSFailure = getNewTelltaleState();
+        //         backend.parkBrake = getNewTelltaleState();
+        //         backend.tyrePressureLow = getNewTelltaleState();
+        //         backend.brakeFailure = getNewTelltaleState();
+        //         backend.airbagFailure = getNewTelltaleState();
+        //     }
+        //     repeat: false
+        //     running: backend.enableSimulation
+        //     function getNewTelltaleState() {
+        //         return Math.round(Math.random());
+        //     }
+        // }
 
         /*
           Lucee elements timer
